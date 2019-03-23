@@ -1,0 +1,57 @@
+﻿<Window x:Name="window" x:Class="DNACoder.Wpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DNACoder.Wpf"
+        mc:Ignorable="d" SizeToContent="Height"
+        Title="ДНК кодирование" Width="470.111">
+    <StackPanel Margin="15">
+        <!-- Панель открытия файла -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="150"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBox x:Name="filePath" IsReadOnly="True" Margin="0, 5" Grid.Column="0" Text="{Binding FilePath, ElementName=window}" />
+            <Button x:Name="openButton" Content="Открыть" Margin="5, 5" Grid.Column="2" Click="OpenButton_Click"/>
+        </Grid>
+
+        <!-- Панель информации о файле -->
+        <StackPanel>
+            <Label x:Name="fileSize" Content="Размер: "/>
+            <Label x:Name="formatType" Content="Формат: "/>
+            <Label x:Name="codeWordLength" Content="Длина кодового слова: "/>
+        </StackPanel>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Панель выбора режима сохранения -->
+            <StackPanel Grid.Column="0" >
+                <Label Content="Изменить тип кодировки:"/>
+                <RadioButton x:Name="noCoder" Content="Без кодировки"/>
+                <RadioButton x:Name="coder3Button" Content="3CC - кодировать 3 нуклеотидами (A, C, G)" />
+                <RadioButton x:Name="coder4Button" Content="4СС - кодировать 4 нуклеотидами (A, C, G, T)"/>
+            </StackPanel>
+            <Grid Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="2*"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <Button x:Name="saveButton" Content="Сохранить" IsEnabled="False" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Click="SaveButton_Click" />
+            </Grid>
+        </Grid>
+    </StackPanel>
+</Window>
