@@ -86,6 +86,48 @@ namespace DNACoder.Wpf
             }
         }
 
+        Dictionary<string, string> codones = new Dictionary<string, string>
+        {
+            ["CGA"] = "Arg",
+            ["CGC"] = "Arg",
+            ["CGG"] = "Arg",
+            ["AGA"] = "Arg",
+            ["AGG"] = "Arg",
+
+            ["AGC"] = "Ser",
+
+            ["ACA"] = "Thr",
+            ["ACC"] = "Thr",
+            ["ACG"] = "Thr",
+
+            ["CCA"] = "Pro",
+            ["GCC"] = "Pro",
+            ["GCG"] = "Pro",
+
+            ["GCA"] = "Ala",
+            ["GCC"] = "Ala",
+            ["GCG"] = "Ala",
+
+            ["GGA"] = "Gly",
+            ["GGC"] = "Gly",
+            ["GGG"] = "Gly",
+
+            ["AAA"] = "Lys",
+            ["AAG"] = "Lys",
+
+            ["AAC"] = "Asn",
+
+            ["CAA"] = "Gln",
+            ["CAG"] = "Gln",
+
+            ["CAC"] = "His",
+
+            ["GAA"] = "Glu",
+            ["GAG"] = "Glu",
+
+            ["GAC"] = "Asp",
+        };
+        
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new SaveFileDialog();
@@ -115,6 +157,49 @@ namespace DNACoder.Wpf
 
                 Stream.CopyTo(destinationStream);
                 destinationStream.Close();
+
+                if (shouldSaveSecondChain.IsChecked == true && wordLength > 0 && dialog.FileName.EndsWith("fasta"))
+                {
+                    using (var reader = new StreamReader(File.OpenRead(dialog.FileName)))
+                    {
+                        using (var writer = new StreamWriter(File.OpenWrite(dialog.FileName + 2)))
+                        {
+                            var enc = new char[EncodedStream.TypicalHeaderLength];
+                            reader.Read(enc, 0, enc.Length);
+
+                            writer.Write(enc);
+
+                            var block = new char[1024];
+                            var readCount = 0;
+
+                            while ((readCount = reader.Read(block, 0, 1024)) > 0)
+                            {
+                                writer.Write(block.Select(getComplementaryChar).ToArray());
+                            }
+                        }
+                    }
+
+                    char getComplementaryChar(char ch)
+                    {
+                        if (ch == 'A') return 'T';
+                        else if (ch == 'T') return 'A';
+                        else if (ch == 'C') return 'G';
+                        else if (ch == 'G') return 'C';
+
+                        return char.MinValue;
+                    }
+                }
+
+                if (shouldSaveSecondChain.IsChecked == true)
+                {
+                    var text = File.ReadAllText(dialog.FileName);
+
+                    var result = codones.Aggregate(text, (acc, codone) =>
+                        acc.Replace(codone.Key, $"-{codone.Key}={codone.Value}-")
+                    );
+
+                    File.WriteAllText(dialog.FileName + ".codones", result);
+                }
 
                 MessageBox.Show("Файл успешно сохранен", "Готово", MessageBoxButton.OK, MessageBoxImage.Information);
             }
